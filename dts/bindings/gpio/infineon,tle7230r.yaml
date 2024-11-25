@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2024 Zach Thomas
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+description: Infineon TLE7230R relay drriver
+
+compatible: "infineon,tle7230r"
+
+include: [gpio-controller.yaml, spi-device.yaml]
+
+properties:
+  "#gpio-cells":
+    const: 2
+
+  resn-gpios:
+    type: phandle-array
+    description: "GPIO for reset"
+
+gpio-cells:
+  - pin
+  - flags

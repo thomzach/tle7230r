@@ -1,0 +1,24 @@
+#
+# Copyright (c) 2024 Zach Thomas
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+if GPIO
+
+menuconfig GPIO_TLE7230R
+	bool "TLE7230R SPI-based relay driver"
+	default y
+	depends on DT_HAS_INFINEON_TLE7230R_ENABLED
+	depends on SPI
+	help
+	  Enable driver for TLE7230r SPI-based relay driver.
+
+config GPIO_TLE7230R_INIT_PRIORITY
+	int "Init priority"
+	default 75
+	depends on GPIO_TLE7230R
+	help
+	  Device driver initialization priority.
+
+endif # GPIO

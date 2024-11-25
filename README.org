@@ -1,0 +1,21 @@
+* TLE7230R Relay Driver
+
+Zephyr driver to use GPIO api with with the infineon tle7230r relay driver chip. Only has basic gpio functionality, no diagnostic feedback.
+
+* Example overlay 
+
+#+begin_src
+  &spi3 {
+        compatible = "nordic,nrf-spim";
+        status = "okay";
+        cs-gpios = <&gpio0 29 GPIO_ACTIVE_LOW>,
+
+        tle7230r_1: tle7230r@0 { 
+                compatible = "infineon,tle7230r"; 
+                reg = <0>; 
+                spi-max-frequency = <1600000>; 
+                gpio-controller; 
+                #gpio-cells = <2>; 
+        };
+  };
+#+end_src

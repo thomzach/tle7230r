@@ -300,27 +300,27 @@ static int tle7230r_init(const struct device *dev)
 }
 
 BUILD_ASSERT(CONFIG_GPIO_TLE7230R_INIT_PRIORITY > CONFIG_SPI_INIT_PRIORITY,
-	     "TLE7230R must be initialized after SPI");
+         "TLE7230R must be initialized after SPI");
 
 #define TLE7230R_INIT_GPIO_FIELDS(inst, gpio)                                      \
-	COND_CODE_1(DT_INST_NODE_HAS_PROP(inst, gpio),                                 \
-		    (GPIO_DT_SPEC_GET_BY_IDX(DT_DRV_INST(inst), gpio, 0)), ({0}))
+    COND_CODE_1(DT_INST_NODE_HAS_PROP(inst, gpio),                                 \
+            (GPIO_DT_SPEC_GET_BY_IDX(DT_DRV_INST(inst), gpio, 0)), ({0}))
 
 #define TLE7230R_INIT(inst)                                                        \
-	static const struct tle7230r_config tle7230r_##inst##_config = {               \
-		.common = {                                                                \
-				.port_pin_mask = GPIO_PORT_PIN_MASK_FROM_DT_INST(inst),            \
-		},                                                                         \
-		.bus = SPI_DT_SPEC_INST_GET(                                               \
-			inst, SPI_OP, 0),                                                      \
-		.gpio_reset = TLE7230R_INIT_GPIO_FIELDS(inst, resn_gpios),                 \
-	};                                                                             \
+    static const struct tle7230r_config tle7230r_##inst##_config = {               \
+        .common = {                                                                \
+                .port_pin_mask = GPIO_PORT_PIN_MASK_FROM_DT_INST(inst),            \
+        },                                                                         \
+        .bus = SPI_DT_SPEC_INST_GET(                                               \
+            inst, SPI_OP, 0),                                                      \
+        .gpio_reset = TLE7230R_INIT_GPIO_FIELDS(inst, resn_gpios),                 \
+    };                                                                             \
                                                                                    \
-	static struct tle7230r_data tle7230r_##inst##_drvdata;                         \
+    static struct tle7230r_data tle7230r_##inst##_drvdata;                         \
                                                                                    \
-	/* This has to be initialized after the SPI peripheral. */                     \
-	DEVICE_DT_INST_DEFINE(inst, tle7230r_init, NULL, &tle7230r_##inst##_drvdata,   \
-			      &tle7230r_##inst##_config, POST_KERNEL,                          \
-			      CONFIG_GPIO_TLE7230R_INIT_PRIORITY, &api_table);
+    /* This has to be initialized after the SPI peripheral. */                     \
+    DEVICE_DT_INST_DEFINE(inst, tle7230r_init, NULL, &tle7230r_##inst##_drvdata,   \
+                  &tle7230r_##inst##_config, POST_KERNEL,                          \
+                  CONFIG_GPIO_TLE7230R_INIT_PRIORITY, &api_table);
 
 DT_INST_FOREACH_STATUS_OKAY(TLE7230R_INIT)

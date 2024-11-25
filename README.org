@@ -5,17 +5,68 @@ Zephyr driver to use GPIO api with with the infineon tle7230r relay driver chip.
 * Example overlay 
 
 #+begin_src
-  &spi3 {
-        compatible = "nordic,nrf-spim";
-        status = "okay";
-        cs-gpios = <&gpio0 29 GPIO_ACTIVE_LOW>,
-
-        tle7230r_1: tle7230r@0 { 
-                compatible = "infineon,tle7230r"; 
-                reg = <0>; 
-                spi-max-frequency = <1600000>; 
-                gpio-controller; 
-                #gpio-cells = <2>; 
+/ {
+    relays {
+        compatible = "gpio-leds"; 
+        relay0: relay_0 { 
+            gpios = <&tle7230r 0 GPIO_OPEN_DRAIN>; 
         };
-  };
+    };
+};
+
+&spi3 {
+      compatible = "nordic,nrf-spim";
+      status = "okay";
+      cs-gpios = <&gpio0 29 GPIO_ACTIVE_LOW>;
+
+      tle7230r: tle7230r@0 { 
+              compatible = "infineon,tle7230r"; 
+              reg = <0>; 
+              spi-max-frequency = <1600000>; 
+              gpio-controller; 
+              #gpio-cells = <2>; 
+      };
+};
+#+end_src
+
+* prj.conf
+#+begin_src
+CONFIG_GPIO=y
+CONFIG_SPI=y
+#+end_src
+
+* Example usage
+#+begin_src C
+#include <zephyr/kernel.h>
+#include <zephyr/drivers/gpio.h>
+
+#define RELAY_FLAGS (GPIO_OUTPUT | GPIO_SINGLE_ENDED | GPIO_LINE_OPEN_DRAIN)
+
+#define RELAY0_NODE DT_NODELABEL(relay0)
+static const struct gpio_dt_spec relay = GPIO_DT_SPEC_GET(RELAY0_NODE, gpios);
+
+int main(void) {
+
+  if (!gpio_is_ready_dt(&relay)) {
+    return 0;
+  }
+
+  gpio_pin_configure_dt(&relay, RELAY_FLAGS);
+
+  gpio_pin_set_dt(&relay, 1);
+
+  return 0;
+}
+
+#+end_src
+
+* Include as module
+#+begin_src
+# add to west.yml
+manifest:
+  projects:
+    - name: tle7230r
+      url: https://github.com/thomzach/tle7230r
+      revision: main
+      path: modules/tle7230r
 #+end_src
